@@ -1,0 +1,18 @@
+{
+  "name": "bitmio_node",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "Mirko Kiefer <mail@mirkokiefer.com>",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "superagent": "^6.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^8.1.3"
+  }
+}

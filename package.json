@@ -1,10 +1,11 @@
 {
   "name": "bitmio",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test -t 10000",
+    "local_test": "LOCAL_TEST=1 mocha test -t 10000"
   },
   "author": "Mirko Kiefer <mail@mirkokiefer.com>",
   "license": "ISC",

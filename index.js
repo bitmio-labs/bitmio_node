@@ -2,14 +2,13 @@ require('dotenv').config();
 
 const request = require('superagent');
 
-const host = 'https://api.bitmio.com/v1';
-
-const frontend_host = 'https://bitmio.com/';
-const authUrl = `${frontend_host}/auth`;
+const DEFAULT_CONFIG = {
+    host: 'https://api.bitmio.com/v1'
+};
 
 class Bitmio {
-    constructor() {
-
+    constructor({ host } = DEFAULT_CONFIG) {
+        this.host = host;
     }
 
     auth(apiKey) {
@@ -18,7 +17,7 @@ class Bitmio {
 
     async createApiKey() {
         const apiKey = this.apiKey;
-        const url = `${host}/kollab/api_keys`;
+        const url = `${this.host}/kollab/api_keys`;
 
         const { body } = await request
             .post(url)
@@ -29,7 +28,7 @@ class Bitmio {
 
     async me() {
         const apiKey = this.apiKey;
-        const url = `${host}/kollab/me`;
+        const url = `${this.host}/kollab/me`;
 
         const { body } = await request
             .get(url)
@@ -39,7 +38,7 @@ class Bitmio {
     }
 
     async authUri() {
-        const url = `${host}/kollab/auth`;
+        const url = `${this.host}/kollab/auth`;
 
         const result = await request.get(url);
 
@@ -56,7 +55,7 @@ class Bitmio {
 
     async authorizeAppUrl(appID) {
         const apiKey = this.apiKey;
-        const url = `${host}/kollab/integrations/${appID}/auth`;
+        const url = `${this.host}/kollab/integrations/${appID}/auth`;
 
         const { body } = await request
             .get(url)
@@ -67,7 +66,7 @@ class Bitmio {
 
     async call(app_id, { url, method, body, headers }) {
         const apiKey = this.apiKey;
-        const bitmioUrl = `${host}/kollab/integrations/${app_id}/call`;
+        const bitmioUrl = `${this.host}/kollab/integrations/${app_id}/call`;
         const sentBody = { url, method, body, headers };
 
         try {
@@ -80,7 +79,44 @@ class Bitmio {
         } catch (err) {
             console.error(err);
         }
+    }
 
+    async createApp(id, name) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps`;
+
+        const sentBody = { id, name };
+
+        const { body: responseBody } = await request
+            .post(url)
+            .set('Authorization', `Bearer ${apiKey}`)
+            .send(sentBody);
+
+        return responseBody;
+    }
+
+    async listApps() {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps`;
+
+        const { body: responseBody } = await request
+            .get(url)
+            .set('Authorization', `Bearer ${apiKey}`);
+
+        const { items } = responseBody;
+
+        return items;
+    }
+
+    async deleteApp(app_id) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}`;
+
+        const { body: responseBody } = await request
+            .delete(url)
+            .set('Authorization', `Bearer ${apiKey}`);
+
+        return responseBody;
     }
 }
 

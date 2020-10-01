@@ -3,7 +3,12 @@ require('dotenv').config();
 const assert = require('assert');
 const { BITMIO_API_KEY } = process.env;
 
-const { bitmio } = require('../');
+let bitmio = require('../').bitmio;
+
+if (process.env.LOCAL_TEST) {
+    const { Bitmio } = require('../');
+    bitmio = new Bitmio({ host: 'http://localhost:5000/v1' });
+}
 
 assert.ok(BITMIO_API_KEY, 'Needs API key');
 
@@ -54,5 +59,36 @@ describe('Bitmio for Node', () => {
 
         const todos = result.map(each => each.title);
         console.log(todos);
+    });
+
+    it('should create two apps', async () => {
+        const result1 = await bitmio.createApp('myapp', 'My App');
+        assert.ok(result1.success);
+
+        const result2 = await bitmio.createApp('myotherapp', 'My Other App');
+        assert.ok(result2.success);
+    });
+
+    it('should list my apps', async () => {
+        const result = await bitmio.listApps();
+        console.log(result);
+        assert.ok(result.length, 2);
+    });
+
+    it('should delete apps', async () => {
+        const result1 = await bitmio.deleteApp('myapp');
+        assert.ok(result1.success);
+
+        const result2 = await bitmio.deleteApp('myotherapp');
+        assert.ok(result2.success);
+    });
+
+    it('should fail deleting an app without admin role', async () => {
+        try {
+            await bitmio.deleteApp('kollab');
+            assert.ok(false);
+        } catch (err) {
+            assert.ok(true);
+        }
     });
 });

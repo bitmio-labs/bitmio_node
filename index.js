@@ -118,6 +118,67 @@ class Bitmio {
 
         return responseBody;
     }
+
+    async createFunction(app_id, config) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}/functions`;
+
+        const sentBody = config;
+
+        const { body: responseBody } = await request
+            .post(url)
+            .set('Authorization', `Bearer ${apiKey}`)
+            .send(sentBody);
+
+        return responseBody;
+    }
+
+    async listFunctions(app_id) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}/functions`;
+
+        const { body: responseBody } = await request
+            .get(url)
+            .set('Authorization', `Bearer ${apiKey}`);
+
+        const { items } = responseBody;
+
+        return items;
+    }
+
+    async deleteFunction(app_id, function_id) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}`;
+
+        const { body: responseBody } = await request
+            .delete(url)
+            .set('Authorization', `Bearer ${apiKey}`);
+
+        return responseBody;
+    }
+
+    async getFunction(app_id, function_id) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}`;
+
+        const { body: responseBody } = await request
+            .get(url)
+            .set('Authorization', `Bearer ${apiKey}`);
+
+        return responseBody;
+    }
+
+    async callFunction(app_id, function_id, input) {
+        const apiKey = this.apiKey;
+        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}/_call`;
+
+        const { body: responseBody } = await request
+            .post(url)
+            .set('Authorization', `Bearer ${apiKey}`)
+            .send(input);
+
+        return responseBody;
+    }
 }
 
 const bitmio = new Bitmio();

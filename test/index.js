@@ -62,10 +62,10 @@ describe('Bitmio for Node', () => {
     });
 
     it('should create two apps', async () => {
-        const result1 = await bitmio.createApp('myapp', 'My App');
+        const result1 = await bitmio.createApp('gravatar', 'Gravatar');
         assert.ok(result1.success);
 
-        const result2 = await bitmio.createApp('myotherapp', 'My Other App');
+        const result2 = await bitmio.createApp('mybasecamp', 'My Basecamp');
         assert.ok(result2.success);
     });
 
@@ -75,11 +75,70 @@ describe('Bitmio for Node', () => {
         assert.ok(result.length, 2);
     });
 
+    it('should add a function', async () => {
+        const someFunction = {
+            id: 'get_gravatar_url',
+            name: 'Get Gravatar URL',
+            route: '/gravatar/${email}',
+            input: [{ id: 'email', type: 'text', example: 'test@example.com' }],
+            output: [{ id: 'gravatar_url', type: 'text', example: '...', value: '${gravatar_url.result}' }],
+            actions: [
+                { id: 'trim_email', function: 'trim', value: '${input.email}' },
+                { id: 'lowercase_email', function: 'lowercase', value: '${trim_email.result}' },
+                { id: 'md5_email', function: 'md5', value: '${lowercase_email.result}' },
+                { id: 'gravatar_url', value: 'https://www.gravatar.com/avatar/${md5_email.result}' }
+            ]
+        }
+
+        await bitmio.createFunction('gravatar', someFunction);
+    });
+
+    it('should list my functions', async () => {
+        const result = await bitmio.listFunctions('gravatar');
+
+        assert.strictEqual(result.length, 1);
+    });
+
+    it('should get a function config', async () => {
+        const result = await bitmio.getFunction('gravatar', 'get_gravatar_url');
+
+        assert.strict(result.actions, 4);
+    });
+
+    it('should call my function', async () => {
+        const result = await bitmio.callFunction('gravatar', 'get_gravatar_url', { email: 'mail@mirkokiefer.com' });
+
+        assert.ok(result.gravatar_url);
+    });
+
+    it('should delete my function', async () => {
+        await bitmio.deleteFunction('gravatar', 'get_gravatar_url');
+    });
+
+    // it('should add a function requiring auth', async () => {
+    //     const someFunction = {
+    //         id: 'create_project',
+    //         name: 'Create a project',
+    //         method: 'POST',
+    //         route: '/projects',
+    //         input: [
+    //             { id: 'title', type: 'text', example: 'My Project' },
+    //             { id: 'basecamp_auth', type: 'auth', app_id: 'basecamp' }
+    //         ],
+    //         output: [{ id: 'success', type: 'boolean', value: '${gravatar_url.result}' }],
+    //         actions: [
+    //             { id: 'call_api', function: 'http_request', auth: 'basecamp_auth', url: '' }
+    //         ]
+    //     }
+
+    //     await bitmio.createFunction('mybasecamp', someFunction);
+    // });
+
     it('should delete apps', async () => {
-        const result1 = await bitmio.deleteApp('myapp');
+        const result1 = await bitmio.deleteApp('gravatar');
         assert.ok(result1.success);
 
-        const result2 = await bitmio.deleteApp('myotherapp');
+        const result2 = await bitmio.deleteApp('mybasecamp');
         assert.ok(result2.success);
     });
 

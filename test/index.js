@@ -27,12 +27,12 @@ describe('Bitmio API', () => {
     });
 
     describe('Login', () => {
-        it('should login a user', async () => {
-            const res = await bitmio.login();
+        it('should login a user', () => {
+            const res = bitmio.login();
 
             console.info(res);
 
-            assert.ok(res.auth_uri);
+            assert.ok(res);
         });
     });
 });

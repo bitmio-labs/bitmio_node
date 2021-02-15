@@ -25,12 +25,78 @@ class Bitmio {
         return status.version;
     }
 
-    async login() {
-        const url = `${this.host}/kollab/auth`;
+    login() {
+        const url = `${this.host}/kollab/authorize`;
 
-        const res = await request.get(url)
+        return url;
+    }
 
-        return res.body;
+    getUserClient({ access_token }) {
+        return new BitmioUserClient({ host: this.host, access_token });
+    }
+}
+
+class BitmioUserClient {
+    constructor({ host, access_token, api_key } = DEFAULT_CONFIG) {
+        this.host = host;
+        this.access_token = access_token;
+        this.api_key = api_key;
+    }
+
+    async me() {
+        const url = `${this.host}/kollab/me`;
+
+        try {
+            const res = await request
+                .get(url)
+                .set('Authorization', `Bearer ${this.access_token}`);
+
+            return res.body;
+        } catch (err) {
+            return err.response.body;
+        }
+    }
+
+    async createAPIKey({ name }) {
+        const url = `${this.host}/kollab/api_keys?name=${name}`;
+
+        try {
+            const res = await request
+                .post(url)
+                .set('Authorization', `Bearer ${this.access_token}`);
+
+            return res.body;
+        } catch (err) {
+            return err.response.body;
+        }
+    }
+
+    async listAPIKeys() {
+        const url = `${this.host}/kollab/api_keys`;
+
+        try {
+            const res = await request
+                .get(url)
+                .set('Authorization', `Bearer ${this.access_token}`);
+
+            return res.body;
+        } catch (err) {
+            return err.response.body;
+        }
+    }
+
+    async deleteAPIKey({ name }) {
+        const url = `${this.host}/kollab/api_keys?name=${name}`;
+
+        try {
+            const res = await request
+                .delete(url)
+                .set('Authorization', `Bearer ${this.access_token}`);
+
+            return res.body;
+        } catch (err) {
+            return err.response.body;
+        }
     }
 }
 
@@ -38,5 +104,6 @@ const bitmio = new Bitmio();
 
 module.exports = {
     bitmio,
-    Bitmio
+    Bitmio,
+    BitmioUserClient
 }

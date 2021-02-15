@@ -11,173 +11,18 @@ class Bitmio {
         this.host = host;
     }
 
-    auth(apiKey) {
-        this.apiKey = apiKey;
+    async status() {
+        const url = `${this.host}/status`;
+
+        const res = await request.get(url);
+
+        return res.body;
     }
 
-    async createApiKey() {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/api_keys`;
+    async version() {
+        const status = await this.status();
 
-        const { body } = await request
-            .post(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return body;
-    }
-
-    async me() {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/me`;
-
-        const { body } = await request
-            .get(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return body;
-    }
-
-    async authUri() {
-        const url = `${this.host}/kollab/auth`;
-
-        const result = await request.get(url);
-
-        return result.body.auth_uri;
-    }
-
-    async apps() {
-        return [];
-    }
-
-    async authorizedApps() {
-        return [];
-    }
-
-    async authorizeAppUrl(appID) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/integrations/${appID}/auth`;
-
-        const { body } = await request
-            .get(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return body;
-    }
-
-    async call(app_id, { url, method, body, headers }) {
-        const apiKey = this.apiKey;
-        const bitmioUrl = `${this.host}/kollab/integrations/${app_id}/call`;
-        const sentBody = { url, method, body, headers };
-
-        try {
-            const { body: resultBody } = await request
-                .post(bitmioUrl)
-                .send(sentBody)
-                .set('Authorization', `Bearer ${apiKey}`);
-
-            return resultBody;
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    async createApp(id, name) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps`;
-
-        const sentBody = { id, name };
-
-        const { body: responseBody } = await request
-            .post(url)
-            .set('Authorization', `Bearer ${apiKey}`)
-            .send(sentBody);
-
-        return responseBody;
-    }
-
-    async listApps() {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps`;
-
-        const { body: responseBody } = await request
-            .get(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        const { items } = responseBody;
-
-        return items;
-    }
-
-    async deleteApp(app_id) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}`;
-
-        const { body: responseBody } = await request
-            .delete(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return responseBody;
-    }
-
-    async createFunction(app_id, config) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}/functions`;
-
-        const sentBody = config;
-
-        const { body: responseBody } = await request
-            .post(url)
-            .set('Authorization', `Bearer ${apiKey}`)
-            .send(sentBody);
-
-        return responseBody;
-    }
-
-    async listFunctions(app_id) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}/functions`;
-
-        const { body: responseBody } = await request
-            .get(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        const { items } = responseBody;
-
-        return items;
-    }
-
-    async deleteFunction(app_id, function_id) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}`;
-
-        const { body: responseBody } = await request
-            .delete(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return responseBody;
-    }
-
-    async getFunction(app_id, function_id) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}`;
-
-        const { body: responseBody } = await request
-            .get(url)
-            .set('Authorization', `Bearer ${apiKey}`);
-
-        return responseBody;
-    }
-
-    async callFunction(app_id, function_id, input) {
-        const apiKey = this.apiKey;
-        const url = `${this.host}/kollab/apps/${app_id}/functions/${function_id}/_call`;
-
-        const { body: responseBody } = await request
-            .post(url)
-            .set('Authorization', `Bearer ${apiKey}`)
-            .send(input);
-
-        return responseBody;
+        return status.version;
     }
 }
 

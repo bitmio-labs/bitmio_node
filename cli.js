@@ -14,6 +14,11 @@ require('yargs')
 
         console.log(res);
     })
+    .command('login', 'Create account.', () => {},async function (argv) {
+        const res = await bitmio.login();
+
+        console.log(res);
+    })
     .command('create-project [name]', 'Create your project.', (yargs) => {
         yargs.positional('name', {
             type: 'string',

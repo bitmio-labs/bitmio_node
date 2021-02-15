@@ -24,6 +24,14 @@ class Bitmio {
 
         return status.version;
     }
+
+    async login() {
+        const url = `${this.host}/kollab/auth`;
+
+        const res = await request.get(url)
+
+        return res.body;
+    }
 }
 
 const bitmio = new Bitmio();

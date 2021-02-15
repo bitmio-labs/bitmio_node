@@ -5,6 +5,7 @@ const { BITMIO_API_KEY } = process.env;
 
 let bitmio = require('../').bitmio;
 
+
 if (process.env.LOCAL_TEST) {
     const { Bitmio } = require('../');
     bitmio = new Bitmio({ host: 'http://localhost:5000/v1' });
@@ -23,5 +24,15 @@ describe('Bitmio API', () => {
         const res = await bitmio.version();
 
         assert.strictEqual(res, '0.0.1');
+    });
+
+    describe('Login', () => {
+        it('should login a user', async () => {
+            const res = await bitmio.login();
+
+            console.info(res);
+
+            assert.ok(res.auth_uri);
+        });
     });
 });

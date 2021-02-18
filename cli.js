@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-const bitmio = require('./index').bitmio;
+// const bitmio = require('./index').bitmio;
+const { Bitmio } = require('./');
+bitmio = new Bitmio({ host: 'http://localhost:5000/v1' });
 const { prompt } = require('enquirer');
 const Configstore = require('configstore');
 const packageJson = require('./package.json');
@@ -51,6 +53,23 @@ require('yargs')
 
         console.log(res);
     })
+    .command('api-keys', 'Manage API keys.', (yargs) => {
+        yargs.command('create [name]', 'Create an API key.', (yargs) => {
+            yargs.positional('name', {
+                type: 'string',
+                default: 'default',
+                describe: 'API key name'
+            });
+        }, async function (argv) {
+            const { name } = argv
+            const access_token = config.get('access_token');
+
+            const client = await bitmio.getUserClient({ access_token });
+            const res = await client.createAPIKey({ name });
+
+            console.log(res);
+        })
+    })
     .command('api-keys-create [name]', 'Create an API key.', (yargs) => {
         yargs.positional('name', {
             type: 'string',
@@ -85,7 +104,7 @@ require('yargs')
         const access_token = config.get('access_token');
 
         const client = await bitmio.getUserClient({ access_token });
-        const res = await client.deleteAPIKey({name});
+        const res = await client.deleteAPIKey({ name });
 
         console.log(res);
     })
